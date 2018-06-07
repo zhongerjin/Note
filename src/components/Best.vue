@@ -13,14 +13,15 @@
       <input type="text" v-model="sbdl[nowActiveNote]['title']" ref="focus_input" @keyup.enter="changeFocus">
       <!--<textarea v-model="sbdl[nowActiveNote]['text']" ref="focus_textarea" @input="(isFocus = false)"></textarea>-->
       <Codes v-model="sbdl[nowActiveNote]['text']" :isFocus="isFocus" />
-      <!--<codemirror v-model="sbdl[nowActiveNote]['text']" @input="(isFocus = false)"></codemirror>-->
+      <!--<codemirror v-model="sbdl[nowActiveNote]['text']"></codemirror>-->
+      <!--<textarea v-codemirror></textarea>-->
     </div>
   </div>
 </template>
 
 <script>
-  import CodeMirror from 'codemirror/lib/codemirror'
-  import 'codemirror/mode/javascript/javascript'
+  // import CodeMirror from 'codemirror/lib/codemirror'
+  // import 'codemirror/mode/javascript/javascript'
   import Codes from './Code'
   import { codemirror } from 'vue-codemirror'
 
@@ -88,6 +89,22 @@
           if (value) {
             el.focus()
           }
+        }
+      },
+      codemirror: {
+        bind(el) {
+          // this.codemirror = CodeMirror.fromTextArea(this.$refs.focus_textarea);
+          this.codemirror = CodeMirror.fromTextArea(el, {
+            mode: 'javascript',
+            lineNumbers: true
+          });
+          this.codemirror.on('change', () => {
+            this.set(this.codemirror.getValue())
+          });
+        },
+        update(value, oldValue) {
+          console.log(value);
+          this.codemirror.setValue(value || '');
         }
       }
     }
@@ -175,5 +192,5 @@
 </style>
 
 <style>
-  @import '../../node_modules/codemirror/lib/codemirror.css';
+  /*@import '../../node_modules/codemirror/lib/codemirror.css';*/
 </style>
