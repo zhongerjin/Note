@@ -32,4 +32,4 @@ cm.on('change', cm => {
 会出现codemirror.js中drawSelectionCursor函数执行两次，导致光标会跳到文档最前面
 
 ------------------------------
-[demo](https://zhongerjin.github.io/Note/dist)
+[demo](https://zhongerjin.github.io/Note/dist/#/note)
