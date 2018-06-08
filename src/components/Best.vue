@@ -179,6 +179,7 @@
       height 7.7vh
       padding .8vh .8vw
       outline none
+      transition .2s ease
     textarea
       width 100%
       resize none
@@ -189,6 +190,8 @@
 </style>
 <style lang="stylus">
   .big_box.rec
+    input
+      width 97vw
     .CodeMirror
       min-width 50vw
       max-width 50vw
