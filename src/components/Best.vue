@@ -14,8 +14,6 @@
       <input type="text" v-model="sbdl[nowActiveNote]['title']" ref="focus_input" @keyup.enter="changeFocus">
       <!--<textarea v-model="sbdl[nowActiveNote]['text']" ref="focus_textarea" @input="(isFocus = false)"></textarea>-->
       <Codes v-model="sbdl[nowActiveNote]['text']" :isFocus="isFocus" :isSbdl="recover" @changeSbdl="changeSbdl"/>
-      <!--<codemirror v-model="sbdl[nowActiveNote]['text']"></codemirror>-->
-      <!--<textarea v-codemirror></textarea>-->
     </div>
     <div class="toggle"></div>
   </div>
@@ -35,8 +33,7 @@
       }
     },
     components: {
-      Codes,
-      codemirror
+      Codes
     },
     methods: {
       addNote() {
