@@ -1,7 +1,8 @@
 <template>
   <div class="editingArea">
+    <div class="toggle" @click="interesting"></div>
     <textarea ref="textarea"></textarea>
-    <div class="showingArea" v-html="markdown"></div>
+    <div class="showingArea pad10" v-html="markdown"></div>
   </div>
 </template>
 
@@ -21,7 +22,8 @@
     },
     props: {
       value: String,
-      isFocus: Boolean
+      isFocus: Boolean,
+      isSbdl: Boolean
     },
     watch: {
       value(value, oldValue) {
@@ -32,6 +34,7 @@
       },
       isFocus(isFocus) {
         console.log(isFocus);
+        if(!isFocus){return false;}
         this.jsonEditor.focus();
         this.jsonEditor.setCursor(this.jsonEditor.lineCount(), 0);
       },
@@ -42,15 +45,16 @@
     },
     mounted() {
       this.jsonEditor = CodeMirror.fromTextArea(this.$refs.textarea, {
-        lineNumbers: true,
+        // lineNumbers: true,
         mode: 'javascript',
-        // autoRefresh: true,
+        autoRefresh: true,
         tabSize: 2,
+        smartIndent: false,
+        theme: 'shadowfox'
       });
       this.jsonEditor.setValue(this.value);
       this.markdown = marked(this.value);
       this.jsonEditor.on('change', cm => {
-        // this.handleInput(cm);
         // this.$emit('changed', cm.getValue());
         // this.$emit('input', cm.getValue());
         // this.hhh = cm.getValue();
@@ -61,41 +65,64 @@
       });
     },
     methods: {
+      interesting(){
+        this.$emit('changeSbdl', !this.isSbdl);
+      }
     }
   }
 </script>
 
 <style>
   @import '../../node_modules/codemirror/lib/codemirror.css';
+  @import '../../node_modules/codemirror/theme/shadowfox.css';
 </style>
-<!--<style scoped lang="stylus">-->
-  <!--.editingArea-->
-    <!--display flex-->
-    <!--justify-content center-->
-  <!--.CodeMirror-->
-    <!--height auto-->
-  <!--.CodeMirror-sizer-->
-    <!--min-width 41vw-->
-    <!--max-width 41vw-->
-<!--</style>-->
+
+<style scoped lang="stylus">
+  .editingArea
+    display flex
+    min-height 88.8vh
+    max-height 88.8vh
+    position relative
+    .toggle
+      position absolute
+      width .8vw
+      height 5vh
+      background-color #7e7
+      left 0
+      bottom 12vh
+      z-index 999
+      display flex
+      align-items center
+      justify-content center
+      cursor pointer
+</style>
 
 <style>
+  .pad10{
+    padding: .8vh .8vw;
+  }
   .editingArea{
     display: flex;
-    justify-content: center;
+    /*justify-content: center;*/
+    min-height: 88.8vh;
+    max-height: 88.8vh;
   }
   .CodeMirror{
-    max-width: 41vw;
-    min-width: 41vw;
+    max-width: 38vw;
+    min-width: 38vw;
     height: auto;
+    padding: .8vh .8vw;
+    transition: .2s ease;
   }
   .CodeMirror-sizer{
     max-width: 41vw;
     min-width: 41vw;
   }
   .showingArea{
+    padding-top: 0;
     width: 38vw;
     overflow: auto;
+    transition: .2s ease;
   }
 </style>
 

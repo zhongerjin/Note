@@ -1,9 +1,10 @@
 <template>
-  <div class="big_box">
+  <div class="big_box" :class="(recover ? 'rec' : '')">
     <div class="box-left">
       <button class="addNode" @click="addNote">addNote</button>
       <div class="nodelist">
-        <div class="node" v-for="(value, index) in sbdl" @click="changeNode(index)">
+        <div class="node" v-for="(value, index) in sbdl" @click="changeNode(index)"
+        :class="(value.isActive ? 'active': '')">
           <span>{{value.title.trim().substring(0,15)}}</span>
           {{value.text.trim().substring(0,15)}}
         </div>
@@ -12,18 +13,16 @@
     <div class="input-exia" ref="interesting">
       <input type="text" v-model="sbdl[nowActiveNote]['title']" ref="focus_input" @keyup.enter="changeFocus">
       <!--<textarea v-model="sbdl[nowActiveNote]['text']" ref="focus_textarea" @input="(isFocus = false)"></textarea>-->
-      <Codes v-model="sbdl[nowActiveNote]['text']" :isFocus="isFocus" />
+      <Codes v-model="sbdl[nowActiveNote]['text']" :isFocus="isFocus" :isSbdl="recover" @changeSbdl="changeSbdl"/>
       <!--<codemirror v-model="sbdl[nowActiveNote]['text']"></codemirror>-->
       <!--<textarea v-codemirror></textarea>-->
     </div>
+    <div class="toggle"></div>
   </div>
 </template>
 
 <script>
-  // import CodeMirror from 'codemirror/lib/codemirror'
-  // import 'codemirror/mode/javascript/javascript'
   import Codes from './Code'
-  import { codemirror } from 'vue-codemirror'
 
   export default {
     name: "best",
@@ -32,6 +31,7 @@
         nowActiveNote: 0,
         sbdl: [],
         isFocus: false,
+        recover: false
       }
     },
     components: {
@@ -42,22 +42,27 @@
       addNote() {
         let new_note = {
           title: '无标题文档',
-          text: 'asd'
+          text: 'asd',
+          isActive: true,
         };
         this.sbdl.push(new_note);
         this.nowActiveNote = this.sbdl.length - 1;
-        // this.isFocus = true;
-        // this.$refs.focus_input.focus();
+        this.changeNode(this.nowActiveNote);
       },
       changeNode(key) {
         console.log(key);
         this.nowActiveNote = key;
+        this.sbdl.forEach((obj) => obj['isActive'] = false);
+        this.sbdl[key]['isActive'] = true;
+        // this.$refs.focus_input.focus();
+        this.isFocus = false;
       },
       changeFocus() {
-        // console.log('asd');
         this.isFocus = true;
-        // this.isFocus = false;
-        // this.$refs.focus_textarea.focus();
+      },
+      changeSbdl(value){
+        console.log(value);
+        this.recover = value;
       }
     },
     computed: {},
@@ -67,10 +72,6 @@
       Object.keys(this.FuckingNote).length === 0 ? this.addNote() : null;
     },
     mounted() {
-      // console.log(this.$refs.interesting);
-      // var myCodeMirror = CodeMirror.fromTextArea(this.$refs.focus_textarea);
-      // console.log(myCodeMirror);
-      // console.log('mounted');
     },
     destroyed() {
       this.$store.dispatch('saveNotes', this.sbdl);
@@ -112,6 +113,7 @@
 </script>
 
 <style scoped lang="stylus">
+  $tran-mins = .2s ease
   ::-webkit-scrollbar
     height: 8px;
     width: 8px;
@@ -151,6 +153,7 @@
     .box-left
       width 20vw
       border 1px solid #42b983
+      transition $tran-mins
       .addNode
         border none
         width inherit
@@ -170,18 +173,26 @@
           color #fff
           background-color #42b983
           border 1px solid #0003
-
+        .node.active
+          background-color #379369
+  .big_box.rec
+    .box-left
+      width 0vw
+      border-left 0
   .input-exia
     display flex
     flex-direction column
     align-items center
     flex 1
     height 97vh
+    border 1px solid #42b983
+    border-left none
     input
-      border 1px solid #42b983
-      border-bottom none
+      border none
+      border-bottom  1px solid #42b983
       width 100%
       height 7.7vh
+      outline none
     textarea
       width 100%
       resize none
@@ -192,5 +203,11 @@
 </style>
 
 <style>
-  /*@import '../../node_modules/codemirror/lib/codemirror.css';*/
+  .big_box.rec .CodeMirror{
+    min-width: 50vw;
+    max-width: 50vw;
+  }
+  .big_box.rec .showingArea{
+    width: 46vw;
+  }
 </style>
