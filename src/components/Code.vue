@@ -1,6 +1,6 @@
 <template>
-  <div class="editingArea">
-    <div class="toggle" @click="interesting"></div>
+  <div class="editingArea" :class="(sideBarIsClose ? 'recover' : '')">
+    <div class="toggle" @click="toggleSideBar"></div>
     <textarea ref="textarea"></textarea>
     <div class="showingArea pad10" v-html="markdown"></div>
   </div>
@@ -17,13 +17,14 @@
       return {
         jsonEditor: null,
         markdown: null,
-        hhh: null
+        editorValue: null,
+        sideBarIsClose: false,
       }
     },
     props: {
       value: String,
       isFocus: Boolean,
-      isSbdl: Boolean
+      isRecover: Boolean
     },
     watch: {
       value(value, oldValue) {
@@ -38,7 +39,7 @@
         this.jsonEditor.focus();
         this.jsonEditor.setCursor(this.jsonEditor.lineCount(), 0);
       },
-      hhh(value) {
+      editorValue(value) {
         console.log('www');
         this.$emit('input', value);
       }
@@ -61,12 +62,17 @@
         this.markdown = marked(cm.getValue());
       })
       this.jsonEditor.on('blur', cm => {
-        this.hhh = cm.getValue();
+        this.editorValue = cm.getValue();
+        this.changeIsFocus();
       });
     },
     methods: {
-      interesting(){
-        this.$emit('changeSbdl', !this.isSbdl);
+      toggleSideBar(){
+        this.sideBarIsClose = !this.isRecover;
+        this.$emit('changeRecover', this.sideBarIsClose);
+      },
+      changeIsFocus(){
+        this.$emit('changeIsFocus', !this.isFocus);
       }
     }
   }
@@ -87,7 +93,7 @@
       position absolute
       width .8vw
       height 5vh
-      background-color #7e7
+      background-color #7daa74
       left 0
       bottom 12vh
       z-index 999
@@ -95,34 +101,26 @@
       align-items center
       justify-content center
       cursor pointer
+  .pad10
+    padding .8vh .8vw
+  .showingArea
+    padding-top 0
+    width 37.5vw
+    overflow auto
+    transition .2s ease
+  .editingArea.recover
+    .toggle
+      background-color #7e7
 </style>
 
-<style>
-  .pad10{
-    padding: .8vh .8vw;
-  }
-  .editingArea{
-    display: flex;
-    /*justify-content: center;*/
-    min-height: 88.8vh;
-    max-height: 88.8vh;
-  }
-  .CodeMirror{
-    max-width: 38vw;
-    min-width: 38vw;
-    height: auto;
-    padding: .8vh .8vw;
-    transition: .2s ease;
-  }
-  .CodeMirror-sizer{
-    max-width: 41vw;
-    min-width: 41vw;
-  }
-  .showingArea{
-    padding-top: 0;
-    width: 38vw;
-    overflow: auto;
-    transition: .2s ease;
-  }
+<style lang="stylus">
+  .CodeMirror
+    max-width 38vw
+    min-width 38vw
+    height auto
+    padding .8vh .8vw
+    transition .2s ease
+    .CodeMirror-sizer
+      max-width 41vw
+      min-width 41vw
 </style>
-

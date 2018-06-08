@@ -11,11 +11,11 @@
       </div>
     </div>
     <div class="input-exia" ref="interesting">
-      <input type="text" v-model="sbdl[nowActiveNote]['title']" ref="focus_input" @keyup.enter="changeFocus">
+      <input type="text" v-model="sbdl[nowActiveNote]['title']" ref="focus_input" @keyup.enter="changeFocus" v-focus="isInputFocus">
       <!--<textarea v-model="sbdl[nowActiveNote]['text']" ref="focus_textarea" @input="(isFocus = false)"></textarea>-->
-      <Codes v-model="sbdl[nowActiveNote]['text']" :isFocus="isFocus" :isSbdl="recover" @changeSbdl="changeSbdl"/>
+      <Codes v-model="sbdl[nowActiveNote]['text']" :isFocus="isFocus" @changeIsFocus="changeIsFocus"
+             :isRecover="recover" @changeRecover="changeRecover"/>
     </div>
-    <div class="toggle"></div>
   </div>
 </template>
 
@@ -28,6 +28,7 @@
       return {
         nowActiveNote: 0,
         sbdl: [],
+        isInputFocus: false,
         isFocus: false,
         recover: false
       }
@@ -51,22 +52,25 @@
         this.nowActiveNote = key;
         this.sbdl.forEach((obj) => obj['isActive'] = false);
         this.sbdl[key]['isActive'] = true;
-        // this.$refs.focus_input.focus();
+        this.isInputFocus = true;
         this.isFocus = false;
       },
       changeFocus() {
+        this.isInputFocus = false;
         this.isFocus = true;
       },
-      changeSbdl(value){
+      changeRecover(value){
         console.log(value);
         this.recover = value;
+      },
+      changeIsFocus(value){
+        this.isFocus = value;
       }
     },
     computed: {},
     created() {
       this.sbdl = this.$store.state.notefile.sbdl || this.sbdl;
-      this.FuckingNote = this.sbdl[0] || {};
-      Object.keys(this.FuckingNote).length === 0 ? this.addNote() : null;
+      this.sbdl.length === 0 ? this.addNote() : null;
     },
     mounted() {
     },
@@ -87,22 +91,6 @@
           if (value) {
             el.focus()
           }
-        }
-      },
-      codemirror: {
-        bind(el) {
-          // this.codemirror = CodeMirror.fromTextArea(this.$refs.focus_textarea);
-          this.codemirror = CodeMirror.fromTextArea(el, {
-            mode: 'javascript',
-            lineNumbers: true
-          });
-          this.codemirror.on('change', () => {
-            this.set(this.codemirror.getValue())
-          });
-        },
-        update(value, oldValue) {
-          console.log(value);
-          this.codemirror.setValue(value || '');
         }
       }
     }
@@ -187,8 +175,9 @@
     input
       border none
       border-bottom  1px solid #42b983
-      width 100%
+      width 77vw
       height 7.7vh
+      padding .8vh .8vw
       outline none
     textarea
       width 100%
@@ -198,13 +187,11 @@
       border 1px solid #42b983
 
 </style>
-
-<style>
-  .big_box.rec .CodeMirror{
-    min-width: 50vw;
-    max-width: 50vw;
-  }
-  .big_box.rec .showingArea{
-    width: 46vw;
-  }
+<style lang="stylus">
+  .big_box.rec
+    .CodeMirror
+      min-width 50vw
+      max-width 50vw
+    .showingArea
+      width 45.7vw
 </style>
