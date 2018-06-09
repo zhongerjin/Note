@@ -6,7 +6,7 @@ export default {
     number: null,
     notes: [],
     activeNode: {},
-    sbdl: []
+    noteGroup: []
   },
   mutations: {
     increment (state) {
@@ -34,7 +34,7 @@ export default {
     },
     saveNotes ({commit}, data){
       commit('setData', {
-        which: 'sbdl',
+        which: 'noteGroup',
         data
       })
     },
@@ -63,7 +63,7 @@ export default {
     }
   },
   getters: {
-    notes: state => state.notes,
-    activeNode: state => state.activeNode
+    // notes: state => state.notes,
+    // activeNode: state => state.activeNode
   },
 }

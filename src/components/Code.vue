@@ -15,7 +15,7 @@
     name: "codes",
     data() {
       return {
-        jsonEditor: null,
+        Editor: null,
         markdown: null,
         editorValue: null,
         sideBarIsClose: false,
@@ -30,14 +30,14 @@
       value(value, oldValue) {
         console.log(oldValue);
         if (value !== oldValue) {
-          this.jsonEditor.setValue(this.value);
+          this.Editor.setValue(this.value);
         }
       },
       isFocus(isFocus) {
         console.log(isFocus);
         if(!isFocus){return false;}
-        this.jsonEditor.focus();
-        this.jsonEditor.setCursor(this.jsonEditor.lineCount(), 0);
+        this.Editor.focus();
+        this.Editor.setCursor(this.Editor.lineCount(), 0);
       },
       editorValue(value) {
         console.log('www');
@@ -45,7 +45,7 @@
       }
     },
     mounted() {
-      this.jsonEditor = CodeMirror.fromTextArea(this.$refs.textarea, {
+      this.Editor = CodeMirror.fromTextArea(this.$refs.textarea, {
         // lineNumbers: true,
         mode: 'javascript',
         autoRefresh: true,
@@ -53,15 +53,16 @@
         smartIndent: false,
         theme: 'shadowfox'
       });
-      this.jsonEditor.setValue(this.value);
+      this.Editor.setValue(this.value);
       this.markdown = marked(this.value);
-      this.jsonEditor.on('change', cm => {
-        // this.$emit('changed', cm.getValue());
-        // this.$emit('input', cm.getValue());
-        // this.hhh = cm.getValue();
-        this.markdown = marked(cm.getValue());
-      })
-      this.jsonEditor.on('blur', cm => {
+      this.Editor.on('change', cm => {
+      // this.$emit('input', cm.getValue());
+      this.markdown = marked(cm.getValue());
+      });
+      this.Editor.on('focus', cm => {
+        this.$emit('changeInputFocus', false);
+      });
+      this.Editor.on('blur', cm => {
         this.editorValue = cm.getValue();
         this.changeIsFocus();
       });
@@ -72,7 +73,7 @@
         this.$emit('changeRecover', this.sideBarIsClose);
       },
       changeIsFocus(){
-        this.$emit('changeIsFocus', !this.isFocus);
+        this.$emit('changeIsFocus', false);
       }
     }
   }

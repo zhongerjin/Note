@@ -3,7 +3,7 @@
     <div class="box-left">
       <button class="addNode" @click="addNote">addNote</button>
       <div class="nodelist">
-        <div class="node" v-for="(value, index) in sbdl" @click="changeNode(index)"
+        <div class="node" v-for="(value, index) in noteGroup" @click="changeNode(index)"
         :class="(value.isActive ? 'active': '')">
           <span>{{value.title.trim().substring(0,15)}}</span>
           {{value.text.trim().substring(0,15)}}
@@ -11,9 +11,10 @@
       </div>
     </div>
     <div class="input-exia" ref="interesting">
-      <input type="text" v-model="sbdl[nowActiveNote]['title']" ref="focus_input" @keyup.enter="changeFocus" v-focus="isInputFocus">
-      <!--<textarea v-model="sbdl[nowActiveNote]['text']" ref="focus_textarea" @input="(isFocus = false)"></textarea>-->
-      <Codes v-model="sbdl[nowActiveNote]['text']" :isFocus="isFocus" @changeIsFocus="changeIsFocus"
+      <input type="text" v-model="noteGroup[nowActiveNote]['title']" ref="focus_input"
+             @keyup.enter="changeFocus" v-focus="isInputFocus" @blur="inputBlur">
+      <!--<textarea v-model="noteGroup[nowActiveNote]['text']" ref="focus_textarea" @input="(isFocus = false)"></textarea>-->
+      <Codes v-model="noteGroup[nowActiveNote]['text']" :isFocus="isFocus" @changeIsFocus="changeIsFocus" @changeInputFocus="changeInputFocus"
              :isRecover="recover" @changeRecover="changeRecover"/>
     </div>
   </div>
@@ -27,7 +28,7 @@
     data() {
       return {
         nowActiveNote: 0,
-        sbdl: [],
+        noteGroup: [],
         isInputFocus: false,
         isFocus: false,
         recover: false
@@ -43,15 +44,15 @@
           text: 'asd',
           isActive: true,
         };
-        this.sbdl.push(new_note);
-        this.nowActiveNote = this.sbdl.length - 1;
+        this.noteGroup.push(new_note);
+        this.nowActiveNote = this.noteGroup.length - 1;
         this.changeNode(this.nowActiveNote);
       },
       changeNode(key) {
         console.log(key);
         this.nowActiveNote = key;
-        this.sbdl.forEach((obj) => obj['isActive'] = false);
-        this.sbdl[key]['isActive'] = true;
+        this.noteGroup.forEach((obj) => obj['isActive'] = false);
+        this.noteGroup[key]['isActive'] = true;
         this.isInputFocus = true;
         this.isFocus = false;
       },
@@ -65,17 +66,27 @@
       },
       changeIsFocus(value){
         this.isFocus = value;
+      },
+      changeInputFocus(value){
+        this.isInputFocus = value;
+      },
+      inputBlur(){
+        this.isInputFocus = false;
       }
     },
     computed: {},
     created() {
-      this.sbdl = this.$store.state.notefile.sbdl || this.sbdl;
-      this.sbdl.length === 0 ? this.addNote() : null;
+      localStorage.getItem("note") && this.$store.replaceState(JSON.parse(localStorage.getItem("note")))
+      this.noteGroup = this.$store.state.notefile.noteGroup || this.noteGroup;
+      this.noteGroup.length === 0 ? this.addNote() : null;
+      window.addEventListener("beforeunload",()=>{
+        localStorage.setItem("note",JSON.stringify(this.$store.state))
+      })
     },
     mounted() {
     },
     destroyed() {
-      this.$store.dispatch('saveNotes', this.sbdl);
+      this.$store.dispatch('saveNotes', this.noteGroup);
     },
     directives: {
       focus: {
