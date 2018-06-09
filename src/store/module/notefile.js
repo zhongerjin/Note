@@ -5,8 +5,8 @@ export default {
     allPage: null,
     number: null,
     notes: [],
-    activeNode: {},
-    noteGroup: []
+    noteGroup: [],
+    nowActiveNote: null
   },
   mutations: {
     increment (state) {
@@ -15,15 +15,6 @@ export default {
     setData (state, data) {
       state[data.which] = data.data;
     },
-    add_note (state, data){
-      state.notes.push(data);
-    },
-    change_note (state, note){
-      state.activeNode = note;
-    },
-    edit_node (state, data){
-      state.activeNode[data.which] = data.data;
-    }
   },
   actions: {
     saveNote ({commit}, data){
@@ -34,32 +25,14 @@ export default {
     },
     saveNotes ({commit}, data){
       commit('setData', {
-        which: 'noteGroup',
-        data
-      })
-    },
-    addNote ({commit}){
-      let new_note = {
-        title : '',
-        text : 'asd'
-      };
-      commit('add_note', new_note);
-      commit('change_note', new_note);
-    },
-    changeNode ({commit}, note){
-      commit('change_note', note);
-    },
-    editNodeTitle ({commit}, data){
-      commit('edit_node', {
-        which: 'title',
-        data
+        which: 'nowActiveNote',
+        data: data[1]
       });
-    },
-    editNodetext ({commit}, data){
-      commit('edit_node', {
-        which: 'text',
-        data
-      })
+      commit('setData', {
+        which: 'noteGroup',
+        data: data[0]
+      });
+      console.log(data[1]);
     }
   },
   getters: {

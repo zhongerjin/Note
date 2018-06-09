@@ -72,21 +72,26 @@
       },
       inputBlur(){
         this.isInputFocus = false;
+      },
+      saveNotes(){
+        this.$store.dispatch('saveNotes', [this.noteGroup, this.nowActiveNote]);
+        localStorage.setItem("note",JSON.stringify(this.$store.state))
       }
     },
     computed: {},
     created() {
-      localStorage.getItem("note") && this.$store.replaceState(JSON.parse(localStorage.getItem("note")))
+      localStorage.getItem("note") && this.$store.replaceState(Object.assign(this.$store.state,JSON.parse(localStorage.getItem("note"))));
       this.noteGroup = this.$store.state.notefile.noteGroup || this.noteGroup;
+      this.nowActiveNote = this.$store.state.notefile.nowActiveNote || this.nowActiveNote;
       this.noteGroup.length === 0 ? this.addNote() : null;
       window.addEventListener("beforeunload",()=>{
-        localStorage.setItem("note",JSON.stringify(this.$store.state))
-      })
+        this.saveNotes()
+      });
     },
     mounted() {
     },
     destroyed() {
-      this.$store.dispatch('saveNotes', this.noteGroup);
+      this.saveNotes();
     },
     directives: {
       focus: {
