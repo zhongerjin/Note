@@ -115,6 +115,7 @@
 
 <style scoped lang="stylus">
   $tran-mins = .2s ease
+  $all-color = #42b983
   ::-webkit-scrollbar
     height: 8px;
     width: 8px;
@@ -153,7 +154,7 @@
     display flex
     .box-left
       width 20vw
-      border 1px solid #42b983
+      border 1px solid $all-color
       transition $tran-mins
       .addNode
         border none
@@ -163,7 +164,7 @@
         outline none
         padding 0
         height 8vh
-        background-color #49eca2
+        background-color #36dd92
       .nodelist
         height 88.8vh
         overflow-y auto
@@ -172,7 +173,7 @@
           align-items center
           flex-direction column
           color #fff
-          background-color #42b983
+          background-color $all-color
           border 1px solid #0003
         .node.active
           background-color #379369
@@ -186,11 +187,11 @@
     align-items center
     flex 1
     height 97vh
-    border 1px solid #42b983
+    border 1px solid $all-color
     border-left none
     input
       border none
-      border-bottom  1px solid #42b983
+      border-bottom  1px solid $all-color
       width 77vw
       height 7.7vh
       padding .8vh .8vw
@@ -201,7 +202,7 @@
       resize none
       flex 1
       padding 0
-      border 1px solid #42b983
+      border 1px solid $all-color
 
 </style>
 <style lang="stylus">
