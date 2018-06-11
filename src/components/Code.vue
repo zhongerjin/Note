@@ -56,8 +56,8 @@
       this.Editor.setValue(this.value);
       this.markdown = marked(this.value);
       this.Editor.on('change', cm => {
-      // this.$emit('input', cm.getValue());
-      this.markdown = marked(cm.getValue());
+        // this.$emit('input', cm.getValue());
+        this.markdown = marked(cm.getValue());
       });
       this.Editor.on('focus', cm => {
         this.$emit('changeInputFocus', false);

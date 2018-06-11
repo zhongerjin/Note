@@ -4,9 +4,12 @@
       <button class="addNode" @click="addNote">addNote</button>
       <div class="nodelist">
         <div class="node" v-for="(value, index) in noteGroup" @click="changeNode(index)"
-        :class="(value.isActive ? 'active': '')">
-          <span>{{value.title.trim().substring(0,15)}}</span>
-          {{value.text.trim().substring(0,15)}}
+        :class="(value.isActive ? 'active': '')" v-if="noteGroup.length >= 0">
+          <div class="node-title">
+            <div class="node-name">{{value.title.trim().substring(0,15)}}</div>
+            <span class="node-icon" @click.stop="deleteNode(index)">{{index}}</span>
+          </div>
+          <span>{{value.text.trim().substring(0,15)}}</span>
         </div>
       </div>
     </div>
@@ -49,12 +52,20 @@
         this.changeNode(this.nowActiveNote);
       },
       changeNode(key) {
+        if(this.noteGroup.length <= 0){
+          return;
+        }
         console.log(key);
         this.nowActiveNote = key;
         this.noteGroup.forEach((obj) => obj['isActive'] = false);
         this.noteGroup[key]['isActive'] = true;
         this.isInputFocus = true;
         this.isFocus = false;
+      },
+      deleteNode(key){
+        console.log(`delete:${key}`);
+        this.noteGroup.splice(key, 1);
+        this.changeNode(this.noteGroup.length - 1);
       },
       changeFocus() {
         this.isInputFocus = false;
@@ -175,6 +186,21 @@
           color #fff
           background-color $all-color
           border 1px solid #0003
+          .node-title
+            display flex
+            width 65%
+            .node-name
+              display inline-block
+              flex 1
+              white-space nowrap
+              text-overflow ellipsis
+              position relative
+              overflow hidden
+            .node-icon
+              width 1vw
+              height 3vh
+              background-color springgreen
+              display inline-block
         .node.active
           background-color #379369
   .big_box.rec
