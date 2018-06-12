@@ -55,6 +55,9 @@
       },
       changeNode(key) {
         console.log(key);
+        if(this.noteGroup.length <= 1){
+          key = 0;
+        }
         this.nowActiveNote = key;
         this.noteGroup.forEach((obj) => obj['isActive'] = false);
         this.noteGroup[key]['isActive'] = true;
