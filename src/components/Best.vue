@@ -4,7 +4,7 @@
       <button class="addNode" @click="addNote">addNote</button>
       <div class="nodelist">
         <div class="node" v-for="(value, index) in noteGroup" @click="changeNode(index)"
-        :class="(value.isActive ? 'active': '')" v-if="noteGroup.length >= 0">
+        :class="(value.isActive ? 'active': '')">
           <div class="node-title">
             <div class="node-name">{{value.title.trim().substring(0,15)}}</div>
             <span class="node-icon" @click.stop="deleteNode(index)">{{index}}</span>
@@ -14,10 +14,10 @@
       </div>
     </div>
     <div class="input-exia" ref="interesting">
-      <input type="text" v-model="noteGroup[nowActiveNote]['title']" ref="focus_input"
+      <input type="text" v-model="activeNote['title']" ref="focus_input"
              @keyup.enter="changeFocus" v-focus="isInputFocus" @blur="inputBlur">
       <!--<textarea v-model="noteGroup[nowActiveNote]['text']" ref="focus_textarea" @input="(isFocus = false)"></textarea>-->
-      <Codes v-model="noteGroup[nowActiveNote]['text']" :isFocus="isFocus" @changeIsFocus="changeIsFocus" @changeInputFocus="changeInputFocus"
+      <Codes v-model="activeNote['text']" :isFocus="isFocus" @changeIsFocus="changeIsFocus" @changeInputFocus="changeInputFocus"
              :isRecover="recover" @changeRecover="changeRecover"/>
     </div>
   </div>
@@ -34,7 +34,8 @@
         noteGroup: [],
         isInputFocus: false,
         isFocus: false,
-        recover: false
+        recover: false,
+        activeNote: {}
       }
     },
     components: {
@@ -48,24 +49,31 @@
           isActive: true,
         };
         this.noteGroup.push(new_note);
-        this.nowActiveNote = this.noteGroup.length - 1;
-        this.changeNode(this.nowActiveNote);
+        this.activeNote = new_note;
+        // this.nowActiveNote = this.noteGroup.length - 1;
+        this.changeNode(this.noteGroup.length - 1);
       },
       changeNode(key) {
-        if(this.noteGroup.length <= 0){
-          return;
-        }
         console.log(key);
         this.nowActiveNote = key;
         this.noteGroup.forEach((obj) => obj['isActive'] = false);
         this.noteGroup[key]['isActive'] = true;
+        this.activeNote = this.noteGroup[key];
         this.isInputFocus = true;
         this.isFocus = false;
       },
       deleteNode(key){
         console.log(`delete:${key}`);
         this.noteGroup.splice(key, 1);
-        this.changeNode(this.noteGroup.length - 1);
+        if(this.noteGroup.length === 0){
+          this.activeNote = {
+            title: '',
+            text: '',
+            isActive: true,
+          };
+          return false;
+        }
+        this.changeNode(key);
       },
       changeFocus() {
         this.isInputFocus = false;
@@ -95,6 +103,9 @@
       this.noteGroup = this.$store.state.notefile.noteGroup || this.noteGroup;
       this.nowActiveNote = this.$store.state.notefile.nowActiveNote || this.nowActiveNote;
       this.noteGroup.length === 0 ? this.addNote() : null;
+      this.activeNote = this.noteGroup[0];
+      this.changeNode(0);
+      this.isInputFocus = true;
       window.addEventListener("beforeunload",()=>{
         this.saveNotes()
       });
@@ -201,6 +212,7 @@
               height 3vh
               background-color springgreen
               display inline-block
+              cursor pointer
         .node.active
           background-color #379369
   .big_box.rec
