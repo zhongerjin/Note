@@ -1,24 +1,26 @@
 <template>
   <div class="big_box" :class="(recover ? 'rec' : '')">
     <div class="box-left">
-      <button class="addNode" @click="addNote">addNote</button>
+      <button class="addNode" @click="newNote">addNote</button>
       <div class="nodelist">
         <div class="node" v-for="(value, index) in noteGroup" @click="changeNode(index)"
         :class="(value.isActive ? 'active': '')">
           <div class="node-title">
             <div class="node-name">{{value.title.trim().substring(0,15)}}</div>
-            <span class="node-icon" @click.stop="deleteNode(index)">{{index}}</span>
+            <span class="node-icon" @click.stop="deleteNode(index)"></span>
           </div>
-          <span>{{value.text.trim().substring(0,15)}}</span>
+          <div class="node-text">
+            <span>{{value.text.trim().substring(0,15)}}</span>
+          </div>
         </div>
       </div>
     </div>
     <div class="input-exia" ref="interesting">
-      <input type="text" v-model="activeNote['title']" ref="focus_input"
+      <input type="text" v-model="noteTitle" ref="focus_input"
              @keyup.enter="changeFocus" v-focus="isInputFocus" @blur="inputBlur">
       <!--<textarea v-model="noteGroup[nowActiveNote]['text']" ref="focus_textarea" @input="(isFocus = false)"></textarea>-->
-      <Codes v-model="activeNote['text']" :isFocus="isFocus" @changeIsFocus="changeIsFocus" @changeInputFocus="changeInputFocus"
-             :isRecover="recover" @changeRecover="changeRecover"/>
+      <Codes v-model="noteText" :isFocus="isFocus" @changeIsFocus="changeIsFocus" @changeInputFocus="changeInputFocus"
+             :isRecover="recover" @changeRecover="changeRecover" @fffuck="fffuck"/>
     </div>
   </div>
 </template>
@@ -35,33 +37,30 @@
         isInputFocus: false,
         isFocus: false,
         recover: false,
-        activeNote: {}
       }
     },
     components: {
       Codes
     },
     methods: {
-      addNote() {
+      newNote(){
         let new_note = {
           title: '无标题文档',
-          text: 'asd',
-          isActive: true,
-        };
+          text: 'interesting',
+          isActive: true
+        }
+        this.addNote(new_note);
+      },
+      addNote(new_note) {
         this.noteGroup.push(new_note);
-        this.activeNote = new_note;
-        // this.nowActiveNote = this.noteGroup.length - 1;
-        this.changeNode(this.noteGroup.length - 1);
+        this.nowActiveNote = this.noteGroup.length - 1;
+        this.changeNode(this.nowActiveNote);
       },
       changeNode(key) {
         console.log(key);
-        if(this.noteGroup.length <= 1){
-          key = 0;
-        }
         this.nowActiveNote = key;
         this.noteGroup.forEach((obj) => obj['isActive'] = false);
         this.noteGroup[key]['isActive'] = true;
-        this.activeNote = this.noteGroup[key];
         this.isInputFocus = true;
         this.isFocus = false;
       },
@@ -69,12 +68,14 @@
         console.log(`delete:${key}`);
         this.noteGroup.splice(key, 1);
         if(this.noteGroup.length === 0){
-          this.activeNote = {
-            title: '',
-            text: '',
-            isActive: true,
-          };
           return false;
+        }
+        if(this.noteGroup.length === key){
+          // key -= 1;
+          key = this.nowActiveNote - 1;
+        }
+        if(this.noteGroup.length - 1 === key && (this.nowActiveNote < key || this.nowActiveNote > key)){
+          key = this.noteGroup.length - 1;
         }
         this.changeNode(key);
       },
@@ -98,16 +99,51 @@
       saveNotes(){
         this.$store.dispatch('saveNotes', [this.noteGroup, this.nowActiveNote]);
         localStorage.setItem("note",JSON.stringify(this.$store.state))
+      },
+      fffuck(value){
+        console.log(value);
+        // this.noteText.set(value);
       }
     },
-    computed: {},
+    computed: {
+      noteTitle:{
+        get(){
+          return (this.noteGroup.length === 0 ? '' : this.noteGroup[this.nowActiveNote]['title']);
+        },
+        set(value){
+          if(this.noteGroup.length === 0){
+            this.addNote({
+              title: value,
+              text: '',
+              isActive: true
+            })
+          }
+          this.noteGroup[this.nowActiveNote]['title'] = value;
+        }
+      },
+      noteText:{
+        get(){
+          return (this.noteGroup.length === 0 ? '' : this.noteGroup[this.nowActiveNote]['text']);
+        },
+        set(value){
+          if(this.noteGroup.length === 0){
+            this.addNote({
+              title: '',
+              text: value,
+              isActive: true
+            })
+          }
+          this.noteGroup[this.nowActiveNote]['text'] = value;
+        }
+      }
+    },
     created() {
       localStorage.getItem("note") && this.$store.replaceState(Object.assign(this.$store.state,JSON.parse(localStorage.getItem("note"))));
       this.noteGroup = this.$store.state.notefile.noteGroup || this.noteGroup;
-      this.nowActiveNote = this.$store.state.notefile.nowActiveNote || this.nowActiveNote;
-      this.noteGroup.length === 0 ? this.addNote() : null;
-      this.activeNote = this.noteGroup[0];
-      this.changeNode(0);
+      this.nowActiveNote = (this.$store.state.notefile.nowActiveNote > this.noteGroup.length - 1 ? this.noteGroup.length - 1 : this.$store.state.notefile.nowActiveNote)
+        || this.nowActiveNote;
+      this.noteGroup.length === 0 ? this.newNote() : null;
+      this.changeNode(this.nowActiveNote);
       this.isInputFocus = true;
       window.addEventListener("beforeunload",()=>{
         this.saveNotes()
@@ -202,7 +238,7 @@
           border 1px solid #0003
           .node-title
             display flex
-            width 65%
+            width 15vw
             .node-name
               display inline-block
               flex 1
@@ -211,13 +247,28 @@
               position relative
               overflow hidden
             .node-icon
-              width 1vw
+              width 2vw
               height 3vh
               background-color springgreen
               display inline-block
               cursor pointer
+              text-align center
+              background url("../assets/delete.svg") center/100% 100% no-repeat
+              visibility collapse
+          .node-text
+            display flex
+            padding-left 1vw
+            width 16vw
         .node.active
-          background-color #379369
+          background-color #379369 !important
+          .node-icon
+            visibility visible
+        .node
+          &:hover
+            background-color #3da978
+            .node-icon
+              visibility visible
+
   .big_box.rec
     .box-left
       width 0vw
