@@ -7,7 +7,8 @@
         :class="(value.isActive ? 'active': '')">
           <div class="node-title">
             <div class="node-name">{{value.title.trim().substring(0,15)}}</div>
-            <span class="node-icon" @click.stop="deleteNode(index)"></span>
+            <span class="node-icon node-delete" @click.stop="deleteNode(index)"></span>
+            <span class="node-icon node-save" @click.stop="saveNode(index)"></span>
           </div>
           <div class="node-text">
             <span>{{value.text.trim().substring(0,15)}}</span>
@@ -20,13 +21,15 @@
              @keyup.enter="changeFocus" v-focus="isInputFocus" @blur="inputBlur">
       <!--<textarea v-model="noteGroup[nowActiveNote]['text']" ref="focus_textarea" @input="(isFocus = false)"></textarea>-->
       <Codes v-model="noteText" :isFocus="isFocus" @changeIsFocus="changeIsFocus" @changeInputFocus="changeInputFocus"
-             :isRecover="recover" @changeRecover="changeRecover" @fffuck="fffuck"/>
+             :isRecover="recover" @changeRecover="changeRecover" @fffuck="fffuck" :valueNumber="nowActiveNote"/>
     </div>
   </div>
 </template>
 
 <script>
   import Codes from './Code'
+  import axios from 'axios'
+  import uuid from 'uuid'
 
   export default {
     name: "best",
@@ -45,6 +48,7 @@
     methods: {
       newNote(){
         let new_note = {
+          nId: uuid(),
           title: '无标题文档',
           text: 'interesting',
           isActive: true
@@ -55,6 +59,15 @@
         this.noteGroup.push(new_note);
         this.nowActiveNote = this.noteGroup.length - 1;
         this.changeNode(this.nowActiveNote);
+        axios.post('/create', {
+          notes: new_note
+        })
+          .then(function (response) {
+            console.log(response);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
       },
       changeNode(key) {
         console.log(key);
@@ -95,6 +108,18 @@
       },
       inputBlur(){
         this.isInputFocus = false;
+        this.saveNode(this.nowActiveNote);
+      },
+      saveNode(key){
+        axios.post('/save', {
+          notes: this.noteGroup[key]
+        })
+          .then(function (response) {
+            console.log(response);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
       },
       saveNotes(){
         this.$store.dispatch('saveNotes', [this.noteGroup, this.nowActiveNote]);
@@ -102,7 +127,7 @@
       },
       fffuck(value){
         console.log(value);
-        // this.noteText.set(value);
+        this.noteText = value;
       }
     },
     computed: {
@@ -253,8 +278,11 @@
               display inline-block
               cursor pointer
               text-align center
-              background url("../assets/delete.svg") center/100% 100% no-repeat
               visibility collapse
+            .node-icon.node-delete
+              background url("../assets/delete.svg") center/100% 100% no-repeat
+            .node-icon.node-save
+              background url("../assets/save.svg") center/100% 100% no-repeat
           .node-text
             display flex
             padding-left 1vw

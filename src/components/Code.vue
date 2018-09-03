@@ -19,28 +19,33 @@
         markdown: null,
         editorValue: null,
         sideBarIsClose: false,
+        isChangNote: false
       }
     },
     props: {
       value: String,
       isFocus: Boolean,
-      isRecover: Boolean
+      isRecover: Boolean,
+      valueNumber: Number
     },
     watch: {
+      valueNumber(value, oldValue){
+        if(value !== oldValue){
+          this.isChangNote = true;
+        }
+      },
       value(value, oldValue) {
-        console.log(oldValue);
-        if (value !== oldValue) {
+        if (this.isChangNote) {
+          this.isChangNote = false;
           this.Editor.setValue(this.value);
         }
       },
       isFocus(isFocus) {
-        console.log(isFocus);
         if(!isFocus){return false;}
         this.Editor.focus();
         this.Editor.setCursor(this.Editor.lineCount(), 0);
       },
       editorValue(value) {
-        console.log('www');
         this.$emit('input', value);
       }
     },
@@ -56,7 +61,8 @@
       this.Editor.setValue(this.value);
       this.markdown = marked(this.value);
       this.Editor.on('change', cm => {
-        // this.$emit('input', cm.getValue());
+        // this.$emit('fffuck', cm.getValue());
+        this.editorValue = cm.getValue();
         this.markdown = marked(cm.getValue());
       });
       this.Editor.on('focus', cm => {
