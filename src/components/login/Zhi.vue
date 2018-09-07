@@ -1,5 +1,6 @@
 <template>
   <v-app id="inspire">
+    <canvas id="canvas"></canvas>
     <v-content>
       <v-container fluid fill-height>
         <div class="mx-auto">
@@ -22,6 +23,7 @@
 <script>
   import Bus from './bus';
   import zhicomponent from './ZhiComponent'
+  import ZhiCanvas from './ZhiCanvas.js'
     export default {
         name: "zhi",
       data: () => ({
@@ -46,11 +48,18 @@
       },
       components: {
         zhicomponent
+      },
+      mounted(){
+        ZhiCanvas(30);
       }
     }
 </script>
 
 <style scoped lang="sass">
+  #inspire
+    /*background: url("../../assets/login_page.jpg") center/100% 100% no-repeat*/
+  #canvas
+    position: absolute
   .mx-auto-chil
     display: flex
     align-items: flex-start
@@ -80,6 +89,13 @@
     transition: .3s ease
   .navs-slider.nav-login .navs-slider-bar
     left: 8.6vw
+  #particles
+    position: absolute
+    width: 100%
+    height: 100%
+    background-size: cover
+    background: #b61924 no-repeat 50% 50%
+
 </style>
 
 <style scoped>
