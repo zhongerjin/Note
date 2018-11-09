@@ -6,10 +6,15 @@ import router from './router'
 import VueX from 'vuex'
 import store from './store/store'
 import Note from './Note'
+import Vuetify from 'vuetify'
+import 'material-design-icons-iconfont/dist/material-design-icons.css'
 
 Vue.config.productionTip = false
 
 Vue.use(VueX)
+Vue.use(Vuetify, {
+  iconfont: 'fa'
+})
 
 /* eslint-disable no-new */
 // new Vue({

@@ -1,12 +1,12 @@
 <template>
-    <div id="note">
-      <router-view/>
-    </div>
+  <keep-alive>
+    <router-view/>
+  </keep-alive>
 </template>
 
 <script>
     export default {
-        name: "note"
+        name: "note",
     }
 </script>
 
