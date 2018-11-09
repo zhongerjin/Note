@@ -59,15 +59,15 @@
         this.noteGroup.push(new_note);
         this.nowActiveNote = this.noteGroup.length - 1;
         this.changeNode(this.nowActiveNote);
-        axios.post('/create', {
-          notes: new_note
-        })
-          .then(function (response) {
-            console.log(response);
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
+        // axios.post('/create', {
+        //   notes: new_note
+        // })
+        //   .then(function (response) {
+        //     console.log(response);
+        //   })
+        //   .catch(function (error) {
+        //     console.log(error);
+        //   });
       },
       changeNode(key) {
         console.log(key);
@@ -111,15 +111,15 @@
         this.saveNode(this.nowActiveNote);
       },
       saveNode(key){
-        axios.post('/save', {
-          notes: this.noteGroup[key]
-        })
-          .then(function (response) {
-            console.log(response);
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
+        // axios.post('/save', {
+        //   notes: this.noteGroup[key]
+        // })
+        //   .then(function (response) {
+        //     console.log(response);
+        //   })
+        //   .catch(function (error) {
+        //     console.log(error);
+        //   });
       },
       saveNotes(){
         this.$store.dispatch('saveNotes', [this.noteGroup, this.nowActiveNote]);
