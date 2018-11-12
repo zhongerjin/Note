@@ -1,7 +1,7 @@
 <template>
   <div>
     <input type="text" @keyup.enter="addOne" v-model="sbdl">
-    <div v-for="(value, key, index) in Fuckdl">
+    <div v-for="(value, index, key) in Fuckdl" :key="key">
         <span>
           {{value}}
         </span>
