@@ -30,7 +30,8 @@
     },
     watch: {
       valueNumber(value, oldValue){
-        if(value !== oldValue){
+        //当数据全部为空时，会将valueNumber设置未-1，以达到清空编辑器和标题框的效果
+        if(value !== oldValue && oldValue !== -1){
           this.isChangNote = true;
         }
       },
@@ -45,13 +46,15 @@
         this.Editor.focus();
         this.Editor.setCursor(this.Editor.lineCount(), 0);
       },
-      editorValue(value) {
-        this.$emit('input', value);
+      editorValue(value, oldValue) {
+        if(value !== oldValue){
+          this.$emit('input', value);
+        }
       }
     },
     mounted() {
       this.Editor = CodeMirror.fromTextArea(this.$refs.textarea, {
-        // lineNumbers: true,
+        lineNumbers: true,
         mode: 'javascript',
         autoRefresh: true,
         tabSize: 2,
@@ -61,7 +64,6 @@
       this.Editor.setValue(this.value);
       this.markdown = marked(this.value);
       this.Editor.on('change', cm => {
-        // this.$emit('fffuck', cm.getValue());
         this.editorValue = cm.getValue();
         this.markdown = marked(cm.getValue());
       });

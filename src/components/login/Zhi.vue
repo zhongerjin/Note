@@ -50,7 +50,7 @@
         zhicomponent
       },
       mounted(){
-        ZhiCanvas(30);
+        // ZhiCanvas(30);
       }
     }
 </script>

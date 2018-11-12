@@ -3,12 +3,12 @@
     <div class="box-left">
       <button class="addNode" @click="newNote">addNote</button>
       <div class="nodelist">
-        <div class="node" v-for="(value, index) in noteGroup" @click="changeNode(index)"
-        :class="(value.isActive ? 'active': '')">
+        <div class="node" v-for="(value, index, key) in noteGroup" @click="changeNode(index)"
+        :class="(value.isActive ? 'active': '')" :key = key>
           <div class="node-title">
             <div class="node-name">{{value.title.trim().substring(0,15)}}</div>
             <span class="node-icon node-delete" @click.stop="deleteNode(index)"></span>
-            <span class="node-icon node-save" @click.stop="saveNode(index)"></span>
+            <!-- <span class="node-icon node-save" @click.stop="saveNode(index)"></span> -->
           </div>
           <div class="node-text">
             <span>{{value.text.trim().substring(0,15)}}</span>
@@ -19,9 +19,8 @@
     <div class="input-exia" ref="interesting">
       <input type="text" v-model="noteTitle" ref="focus_input"
              @keyup.enter="changeFocus" v-focus="isInputFocus" @blur="inputBlur">
-      <!--<textarea v-model="noteGroup[nowActiveNote]['text']" ref="focus_textarea" @input="(isFocus = false)"></textarea>-->
-      <Codes v-model="noteText" :isFocus="isFocus" @changeIsFocus="changeIsFocus" @changeInputFocus="changeInputFocus"
-             :isRecover="recover" @changeRecover="changeRecover" @fffuck="fffuck" :valueNumber="nowActiveNote"/>
+      <Codes v-model="noteText" :isFocus="isFocusByCodes" @changeIsFocus="changeIsFocus" @changeInputFocus="changeInputFocus"
+             :isRecover="recover" @changeRecover="changeRecover" :valueNumber="nowActiveNote"/>
     </div>
   </div>
 </template>
@@ -30,6 +29,7 @@
   import Codes from './Code'
   import axios from 'axios'
   import uuid from 'uuid'
+import { debug } from 'util';
 
   export default {
     name: "best",
@@ -38,7 +38,7 @@
         nowActiveNote: 0,
         noteGroup: [],
         isInputFocus: false,
-        isFocus: false,
+        isFocusByCodes: false,
         recover: false,
       }
     },
@@ -75,12 +75,13 @@
         this.noteGroup.forEach((obj) => obj['isActive'] = false);
         this.noteGroup[key]['isActive'] = true;
         this.isInputFocus = true;
-        this.isFocus = false;
+        this.isFocusByCodes = false;
       },
       deleteNode(key){
         console.log(`delete:${key}`);
         this.noteGroup.splice(key, 1);
         if(this.noteGroup.length === 0){
+          this.nowActiveNote = -1;
           return false;
         }
         if(this.noteGroup.length === key){
@@ -94,21 +95,21 @@
       },
       changeFocus() {
         this.isInputFocus = false;
-        this.isFocus = true;
+        this.isFocusByCodes = true;
       },
       changeRecover(value){
         console.log(value);
         this.recover = value;
       },
       changeIsFocus(value){
-        this.isFocus = value;
+        this.isFocusByCodes = value;
       },
       changeInputFocus(value){
         this.isInputFocus = value;
       },
       inputBlur(){
         this.isInputFocus = false;
-        this.saveNode(this.nowActiveNote);
+        // this.saveNode(this.nowActiveNote);
       },
       saveNode(key){
         // axios.post('/save', {
@@ -125,10 +126,6 @@
         this.$store.dispatch('saveNotes', [this.noteGroup, this.nowActiveNote]);
         localStorage.setItem("note",JSON.stringify(this.$store.state))
       },
-      fffuck(value){
-        console.log(value);
-        this.noteText = value;
-      }
     },
     computed: {
       noteTitle:{
@@ -304,7 +301,6 @@
   .input-exia
     display flex
     flex-direction column
-    align-items center
     flex 1
     height 97vh
     border 1px solid $all-color
@@ -312,7 +308,6 @@
     input
       border none
       border-bottom  1px solid $all-color
-      width 77vw
       height 7.7vh
       padding .8vh .8vw
       outline none
