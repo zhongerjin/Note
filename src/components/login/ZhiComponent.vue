@@ -50,12 +50,9 @@
             :rules="rules.passwordConfirmRules"
           ></v-text-field>
         </v-form>
-        {{register.username}}
-        {{register.account}}
-        {{register.password}}
       </v-card-text>
     </div>
-
+    <v-btn color="info" block>{{Btn_info}}</v-btn>
   </div>
 </template>
 
@@ -66,6 +63,7 @@
       data(){
         return{
           types: null,
+          Btn_info: "",
           register:{
             username:'',
             account:'',
@@ -106,7 +104,9 @@
         this.types = (this.$route.path.replace(/\//, "")) === 'register'? 'register' : 'login';
         Bus.$on("changetype", type => {
           this.types = type;
+          this.Btn_info = this.types === 'register'? '注册' : '登录';
         })
+        this.Btn_info = this.types === 'register'? '注册' : '登录';
       }
     }
 </script>
