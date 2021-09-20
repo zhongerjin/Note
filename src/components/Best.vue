@@ -1,7 +1,7 @@
 <template>
   <div class="big_box" :class="(recover ? 'rec' : '')">
     <div class="box-left">
-      <button class="addNode" @click="newNote">addNote</button>
+      <button class="addNode" @click="newNote">添加</button>
       <div class="nodelist">
         <div class="node" v-for="(value, index, key) in noteGroup" @click="changeNode(index)"
         :class="(value.isActive ? 'active': '')" :key = key>
@@ -20,7 +20,7 @@
       <input type="text" v-model="noteTitle" ref="focus_input"
              @keyup.enter="changeFocus" v-focus="isInputFocus" @blur="inputBlur">
       <Codes v-model="noteText" :isFocus="isFocusByCodes" @changeIsFocus="changeIsFocus" @changeInputFocus="changeInputFocus"
-             :isRecover="recover" @changeRecover="changeRecover" :valueNumber="nowActiveNote"/>
+             :isRecover="recover" @changeRecover="changeRecover" :valueNumber="nowActiveNote" :isDelNote="isDelNote"/>
     </div>
   </div>
 </template>
@@ -29,7 +29,7 @@
   import Codes from './Code'
   import axios from 'axios'
   import uuid from 'uuid'
-import { debug } from 'util';
+// import { debug } from 'util';
 
   export default {
     name: "best",
@@ -40,6 +40,7 @@ import { debug } from 'util';
         isInputFocus: false,
         isFocusByCodes: false,
         recover: false,
+        isDelNote: false
       }
     },
     components: {
@@ -50,7 +51,7 @@ import { debug } from 'util';
         let new_note = {
           nId: uuid(),
           title: '无标题文档',
-          text: 'interesting',
+          text: '内容',
           isActive: true
         }
         this.addNote(new_note);
@@ -91,6 +92,7 @@ import { debug } from 'util';
         if(this.noteGroup.length - 1 === key && (this.nowActiveNote < key || this.nowActiveNote > key)){
           key = this.noteGroup.length - 1;
         }
+        this.isDelNote = true;
         this.changeNode(key);
       },
       changeFocus() {
@@ -155,6 +157,9 @@ import { debug } from 'util';
               isActive: true
             })
           }
+          if(this.isDelNote){
+            this.isDelNote = false;
+          }
           this.noteGroup[this.nowActiveNote]['text'] = value;
         }
       }
@@ -180,13 +185,11 @@ import { debug } from 'util';
       focus: {
         // 指令的定义
         inserted: function (el, {value}) {
-          console.log(value);
           if (value) {
             el.focus()
           }
         },
         update(el, {value}) {
-          console.log(value);
           if (value) {
             el.focus()
           }
@@ -241,7 +244,7 @@ import { debug } from 'util';
       transition $tran-mins
       .addNode
         border none
-        width inherit
+        width 100%
         color #fff
         font-weight bold
         outline none
@@ -278,8 +281,12 @@ import { debug } from 'util';
               visibility collapse
             .node-icon.node-delete
               background url("../assets/delete.svg") center/100% 100% no-repeat
+              width 24px
+              height 24px
             .node-icon.node-save
               background url("../assets/save.svg") center/100% 100% no-repeat
+              width 24px
+              height 24px
           .node-text
             display flex
             padding-left 1vw

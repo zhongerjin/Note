@@ -2,7 +2,6 @@
   <div id="app">
     <img src="./assets/logo.png">
     <router-link to="/">home</router-link>
-    <router-link to="fucking">fucking</router-link>
     <router-link to="/last">last</router-link>
     <router-link to="/best">best</router-link>
     <router-view/>

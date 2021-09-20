@@ -19,25 +19,26 @@
         markdown: null,
         editorValue: null,
         sideBarIsClose: false,
-        isChangNote: false
+        isChangeNote: false
       }
     },
     props: {
       value: String,
       isFocus: Boolean,
       isRecover: Boolean,
-      valueNumber: Number
+      valueNumber: Number,
+      isDelNote: Boolean
     },
     watch: {
       valueNumber(value, oldValue){
         //当数据全部为空时，会将valueNumber设置未-1，以达到清空编辑器和标题框的效果
         if(value !== oldValue && oldValue !== -1){
-          this.isChangNote = true;
+          this.isChangeNote = true;
         }
       },
       value(value, oldValue) {
-        if (this.isChangNote) {
-          this.isChangNote = false;
+        if (this.isChangeNote || this.isDelNote) {
+          this.isChangeNote = false;
           this.Editor.setValue(this.value);
         }
       },
